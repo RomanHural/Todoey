@@ -7,16 +7,24 @@
 
 import UIKit
 
+// MARK: - ToDoListTableViewControllerViewController
 class ToDoListTableViewControllerViewController: UITableViewController {
     
-    var itemArray = ["Find Mike", "Buy Eggos", "Destroy Demeorgon"]
-    var isChecked: Bool = false
+    // MARK: - Private Properties
+    private var itemArray = ["Find Mike", "Buy Eggos", "Destroy Demeorgon"]
     
+    let defaults = UserDefaults.standard
+    
+    // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        if let items = defaults.array(forKey: "ToDoListArray") as? [String] {
+            itemArray = items
+        }
     }
     
+    // MARK: - Table View Methods
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return itemArray.count
     }
@@ -35,10 +43,10 @@ class ToDoListTableViewControllerViewController: UITableViewController {
         } else {
             tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
         }
-        
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
+    // MARK: - Action
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         let alert = UIAlertController(title: "Add New Todoey Item", message: "", preferredStyle: .alert)
         var textField = UITextField()
@@ -49,6 +57,7 @@ class ToDoListTableViewControllerViewController: UITableViewController {
             } else {
                 self.itemArray.append(textField.text ?? "New Item")
             }
+            self.defaults.set(self.itemArray, forKey: "ToDoListArray")
             self.tableView.reloadData()
         }
         
@@ -56,6 +65,7 @@ class ToDoListTableViewControllerViewController: UITableViewController {
             alertTextField.placeholder = "Create new item"
             textField = alertTextField
         }
+        
         alert.addAction(action)
         present(alert, animated: true)
     }
