@@ -13,15 +13,14 @@ class ToDoListTableViewController: UITableViewController {
     
     // MARK: - Private Property
     private var itemArray: [Item] = []
+    private let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
-    // MARK: - Public Property
+    // MARK: - Public Properties
     var selectedCategory: Category? {
         didSet {
             loadItems()
         }
     }
-    
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     // MARK: - Life Cycle
     override func viewDidLoad() {
