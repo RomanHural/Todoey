@@ -7,7 +7,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Todoey-->
+        <!--Items-->
         <scene sceneID="p4q-op-gpV">
             <objects>
                 <tableViewController storyboardIdentifier="ToDoListTableViewController" id="1G6-Dh-C6e" customClass="ToDoListTableViewController" customModule="Todoey" customModuleProvider="target" sceneMemberID="viewController">
@@ -38,13 +38,16 @@
                             <outlet property="delegate" destination="1G6-Dh-C6e" id="naC-eC-htV"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Todoey" id="vZS-HK-VeZ">
+                    <navigationItem key="navigationItem" title="Items" id="vZS-HK-VeZ">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="27t-SP-Ht1">
                             <connections>
                                 <action selector="addButtonPressed:" destination="1G6-Dh-C6e" id="DrY-zM-tSm"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="searchBar" destination="sI2-S7-9i3" id="BYv-po-68W"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ips-I5-aef" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -94,11 +97,11 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="tIv-Su-1ZW" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="1sZ-aJ-hbb">
-                        <rect key="frame" x="0.0" y="59" width="393" height="44"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="1sZ-aJ-hbb">
+                        <rect key="frame" x="0.0" y="59" width="393" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" red="0.34901961679999999" green="0.67058825489999996" blue="0.88235294819999999" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                        <color key="barTintColor" systemColor="systemBlueColor"/>
+                        <color key="barTintColor" red="0.34901961679999999" green="0.67058825489999996" blue="0.88235294819999999" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                         <textAttributes key="titleTextAttributes">
                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         </textAttributes>
@@ -116,9 +119,6 @@
     <resources>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-        <systemColor name="systemBlueColor">
-            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
