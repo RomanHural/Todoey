@@ -6,14 +6,14 @@
 //
 
 import UIKit
-import CoreData
+import RealmSwift
 
 // MARK: - CategoryTableViewController
 class CategoryTableViewController: UITableViewController {
     
     // MARK: - Private Properties
-    private var categoryArray: [Category] = []
-    private let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    private var categories: Results<Category>?
+    let realm = try! Realm()
     
     // MARK: - Life Cycle
     override func viewDidLoad() {
@@ -23,13 +23,12 @@ class CategoryTableViewController: UITableViewController {
     
     // MARK: - TableView Methods
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return categoryArray.count
+        return categories?.count ?? .zero
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
-        let category = categoryArray[indexPath.row]
-        cell.textLabel?.text = category.name
+        cell.textLabel?.text = categories?[indexPath.row].name ?? "No Categories added yet"
         return cell
     }
     
@@ -39,35 +38,38 @@ class CategoryTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        let item = categoryArray[indexPath.row]
+        guard let categories = categories else { return }
         if editingStyle == .delete {
-            context.delete(item)
-            categoryArray.remove(at: indexPath.item)
-            saveCategories()
+            do {
+                try realm.write {
+                    realm.delete(categories[indexPath.row])
+                }
+            } catch {
+                print("Error deleting category: \(error)")
+            }
         }
+        tableView.reloadData()
     }
-    
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let destinationVC = segue.destination as! ToDoListTableViewController
         
         if let indexPath = tableView.indexPathForSelectedRow {
-            destinationVC.selectedCategory = categoryArray[indexPath.row]
+            destinationVC.selectedCategory = categories?[indexPath.row]
         }
     }
     
     // MARK: - Private Methods
-    private func loadCategories(with request: NSFetchRequest<Category> = Category.fetchRequest()) {
-        do {
-            categoryArray = try context.fetch(request)
-        } catch {
-            print("Loading categories error \(error)")
-        }
+    private func loadCategories() {
+        categories = realm.objects(Category.self)
         tableView.reloadData()
     }
     
-    private func saveCategories() {
+    private func save(category: Category) {
         do {
-            try context.save()
+            try realm.write {
+                realm.add(category)
+            }
         } catch {
             print("Saving categories error \(error)")
         }
@@ -79,13 +81,12 @@ class CategoryTableViewController: UITableViewController {
         let alert = UIAlertController(title: "Add New Todoey Category", message: "", preferredStyle: .alert)
         var textField = UITextField()
         let addAction = UIAlertAction(title: "Add", style: .default) { action in
-            let category = Category(context: self.context)
+            let newCategory = Category()
             
             guard let textFieldText = textField.text else { return }
-            category.name = textFieldText
+            newCategory.name = textFieldText
             
-            self.categoryArray.append(category)
-            self.saveCategories()
+            self.save(category: newCategory)
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
         
