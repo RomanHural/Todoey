@@ -9,16 +9,17 @@ import UIKit
 import RealmSwift
 
 // MARK: - CategoryTableViewController
-class CategoryTableViewController: UITableViewController {
+class CategoryTableViewController: SwipeTableViewController {
     
     // MARK: - Private Properties
     private var categories: Results<Category>?
-    let realm = try! Realm()
+    private let realm = try! Realm()
     
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         loadCategories()
+        tableView.rowHeight = 80
     }
     
     // MARK: - TableView Methods
@@ -27,7 +28,7 @@ class CategoryTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         cell.textLabel?.text = categories?[indexPath.row].name ?? "No Categories added yet"
         return cell
     }
@@ -37,25 +38,23 @@ class CategoryTableViewController: UITableViewController {
         performSegue(withIdentifier: "goToItems", sender: self)
     }
     
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        guard let categories = categories else { return }
-        if editingStyle == .delete {
-            do {
-                try realm.write {
-                    realm.delete(categories[indexPath.row])
-                }
-            } catch {
-                print("Error deleting category: \(error)")
-            }
-        }
-        tableView.reloadData()
-    }
-
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let destinationVC = segue.destination as! ToDoListTableViewController
         
         if let indexPath = tableView.indexPathForSelectedRow {
             destinationVC.selectedCategory = categories?[indexPath.row]
+        }
+    }
+    
+    override func deleteModel(at indexPath: IndexPath) {
+        if let category = self.categories?[indexPath.row] {
+            do {
+                try self.realm.write {
+                    self.realm.delete(category)
+                }
+            } catch {
+                print("Error deleting category: \(error)")
+            }
         }
     }
     
@@ -99,3 +98,4 @@ class CategoryTableViewController: UITableViewController {
         present(alert, animated: true)
     }
 }
+

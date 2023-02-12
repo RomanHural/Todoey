@@ -9,7 +9,7 @@ import UIKit
 import RealmSwift
 
 // MARK: - ToDoListTableViewController
-class ToDoListTableViewController: UITableViewController {
+class ToDoListTableViewController: SwipeTableViewController {
     
     // MARK: - Private Property
     private var todoItems: Results<Item>?
@@ -25,6 +25,7 @@ class ToDoListTableViewController: UITableViewController {
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.rowHeight = 65
     }
     
     // MARK: - Table View Methods
@@ -33,7 +34,7 @@ class ToDoListTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         if let item = todoItems?[indexPath.row] {
             cell.textLabel?.text = item.title
             cell.accessoryType = !item.done ? .none : .checkmark
@@ -56,20 +57,18 @@ class ToDoListTableViewController: UITableViewController {
         tableView.reloadData()
         tableView.deselectRow(at: indexPath, animated: true)
     }
-    
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        guard let items = todoItems else { return }
-        let item = items[indexPath.row]
-        if editingStyle == .delete {
+
+    // MARK: - Delete Method
+    override func deleteModel(at indexPath: IndexPath) {
+        if let item = todoItems?[indexPath.row] {
             do {
                 try realm.write {
                     realm.delete(item)
                 }
             } catch {
-                print("Error deleting object: \(error)")
+                print("Deleting item error: \(error)")
             }
         }
-        tableView.reloadData()
     }
     
     // MARK: - Private Methods
